@@ -1,0 +1,6 @@
+- insert:
+    - id: deepseek-web-rpa
+      name: 'file:///D:/deepseekharness/plugins/deepseek-web-rpa/src/index.ts'
+      config:
+        headed: true
+        timeoutMs: 180000

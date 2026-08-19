@@ -44,6 +44,16 @@ function numberOf(model: ModelDraft, key: string): number | undefined {
   return typeof value === 'number' ? value : undefined
 }
 
+/**
+ * Whether this row declares image input. Absence means inherit the route's
+ * `defaultInput` (text-only unless the deployment widened it), so the control
+ * stays unchecked until the user claims vision here.
+ */
+function acceptsImages(model: ModelDraft): boolean {
+  const input = model.input
+  return Array.isArray(input) && input.includes('image')
+}
+
 /** What an interrogation needs, taken from the live form. */
 export interface ProbeTarget {
   /** Settings namespace whose adapter family answers. */
@@ -164,8 +174,8 @@ export function ModelListEditor(props: ModelListEditorProps): ReactNode {
   const [failure, setFailure] = useState<string | undefined>(undefined)
   const [candidates, setCandidates] = useState<readonly DiscoveredModelView[] | undefined>(undefined)
   const [picked, setPicked] = useState<ReadonlySet<string>>(new Set())
-  // Rows carry an id and a name; capacities are the exception, so they stay
-  // folded until asked for rather than crowding every row with four inputs.
+  // Rows carry an id and a name; capacities and modality stay folded until
+  // asked for rather than crowding every row with four inputs.
   const [expanded, setExpanded] = useState<ReadonlySet<number>>(new Set())
   // Capacities are edited as text, so a field's keystrokes are held here rather
   // than re-derived from the parsed count on every change — that would rewrite
@@ -210,7 +220,10 @@ export function ModelListEditor(props: ModelListEditorProps): ReactNode {
     })
   }
 
-  const patch = (index: number, next: Record<string, string | number | undefined>): void => {
+  /** One field patch; arrays are the `input` modality list. */
+  type FieldPatch = string | number | readonly string[] | undefined
+
+  const patch = (index: number, next: Record<string, FieldPatch>): void => {
     onChange(models.map((model, at) => {
       if (at !== index) return model
       // Rebuilt rather than spread over: an emptied optional field has to leave
@@ -225,6 +238,12 @@ export function ModelListEditor(props: ModelListEditorProps): ReactNode {
         Object.entries({ ...model, ...next }).filter(([key]) => !cleared.has(key)),
       )
     }))
+  }
+
+  const setImageSupport = (index: number, enabled: boolean): void => {
+    // Checked writes the claim the host admission path reads; unchecked drops
+    // the field so the route's defaultInput (text-only by default) answers.
+    patch(index, { input: enabled ? ['text', 'image'] : undefined })
   }
 
   const fetchModels = async (): Promise<void> => {
@@ -417,6 +436,17 @@ export function ModelListEditor(props: ModelListEditorProps): ReactNode {
                     onChange={(event) => { editCapacity(index, 'maxTokens', event.target.value) }}
                   />
                 </label>
+                <label className={styles['modelCheckbox']}>
+                  <input
+                    type="checkbox"
+                    checked={acceptsImages(model)}
+                    aria-label={`${t('modelSupportsImages')} ${index + 1}`}
+                    disabled={disabled}
+                    onChange={(event) => { setImageSupport(index, event.target.checked) }}
+                  />
+                  <span>{t('modelSupportsImages')}</span>
+                </label>
+                <p className={styles['modelCheckboxHint']}>{t('modelSupportsImagesHint')}</p>
               </div>
             )
             : null}

@@ -31,6 +31,7 @@ const PiAiConfig = Schema.object({
       name: Schema.string(),
       contextWindow: Schema.number(),
       maxTokens: Schema.number(),
+      input: Schema.array(Schema.union(['text', 'image'] as const)),
     })),
     reasoning: Schema.union(['off', 'high']),
   })),
@@ -1068,6 +1069,45 @@ describe('hand-declared providers', () => {
 
     await waitFor(() => { expect(onClose).toHaveBeenCalledWith(true) })
     expect(firstMutate(mutate).ops[0]?.value).toMatchObject({ models: [{ id: 'bare' }] })
+  })
+
+  it('writes image input when Supports images is checked, and drops it when cleared', async () => {
+    const { mutate, onClose } = mountCard()
+    fireEvent.change(screen.getByLabelText(en.customRoute), { target: { value: 'acme' } })
+    fireEvent.change(screen.getByLabelText(en.baseUrl), { target: { value: 'https://acme.test/v1' } })
+    fireEvent.click(screen.getByRole('button', { name: en.addModel }))
+    fireEvent.change(screen.getByLabelText(`${en.modelId} 1`), { target: { value: 'seeing' } })
+    expandModel(1)
+
+    const checkbox = screen.getByLabelText<HTMLInputElement>(`${en.modelSupportsImages} 1`)
+    expect(checkbox.checked).toBe(false)
+    fireEvent.click(checkbox)
+    expect(checkbox.checked).toBe(true)
+    fireEvent.click(screen.getByText(en.create))
+
+    await waitFor(() => { expect(onClose).toHaveBeenCalledWith(true) })
+    expect(firstMutate(mutate).ops[0]?.value).toMatchObject({
+      models: [{ id: 'seeing', input: ['text', 'image'] }],
+    })
+  })
+
+  it('omits input after Supports images is toggled off again', async () => {
+    const { mutate, onClose } = mountCard()
+    fireEvent.change(screen.getByLabelText(en.customRoute), { target: { value: 'acme' } })
+    fireEvent.change(screen.getByLabelText(en.baseUrl), { target: { value: 'https://acme.test/v1' } })
+    fireEvent.click(screen.getByRole('button', { name: en.addModel }))
+    fireEvent.change(screen.getByLabelText(`${en.modelId} 1`), { target: { value: 'seeing' } })
+    expandModel(1)
+    const checkbox = screen.getByLabelText<HTMLInputElement>(`${en.modelSupportsImages} 1`)
+    fireEvent.click(checkbox)
+    fireEvent.click(checkbox)
+    expect(checkbox.checked).toBe(false)
+    fireEvent.click(screen.getByText(en.create))
+
+    await waitFor(() => { expect(onClose).toHaveBeenCalledWith(true) })
+    expect(firstMutate(mutate).ops[0]?.value).toMatchObject({ models: [{ id: 'seeing' }] })
+    expect((firstMutate(mutate).ops[0]?.value as { models: Record<string, unknown>[] }).models[0])
+      .not.toHaveProperty('input')
   })
 
   it('refuses to create until the route, endpoint, and a model are usable', () => {

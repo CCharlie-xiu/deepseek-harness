@@ -1,0 +1,9 @@
+- insert:
+    - id: kolors-image-gen
+      name: 'file:///D:/deepseekharness/plugins/kolors-image-gen/src/index.ts'
+      config:
+        apiKeyEnv: SILICONFLOW_API_KEY
+        baseURL: https://api.siliconflow.cn/v1
+        model: Kwai-Kolors/Kolors
+        defaultImageSize: 1024x1024
+        timeoutMs: 180000

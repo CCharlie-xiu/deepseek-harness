@@ -1,0 +1,245 @@
+/* AIcss Image Generation canvas — mapped onto dsh semantic tokens. */
+
+.igWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 4px 0 8px;
+  width: min(100%, var(--ig-max-w, 400px));
+}
+
+.igCanvas,
+.igResult {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--ig-ratio, 1 / 1);
+  border-radius: 12px;
+  background: var(--dsw-alias-bg-skeleton, #fafafa);
+  overflow: hidden;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+}
+
+.igResult {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.igDots {
+  position: absolute;
+  inset: 2px;
+  background-image: radial-gradient(circle, var(--dsw-static-neutral-bluish-400, #a1a1a1) 0.7px, transparent 1.3px);
+  background-size: 11px 11px;
+  background-repeat: space;
+  opacity: 0.22;
+}
+
+.igGlow {
+  position: absolute;
+  inset: 2px;
+  background-image: radial-gradient(circle, var(--dsw-static-neutral-bluish-900, #0b0d12) 1.1px, transparent 1.6px);
+  background-size: 11px 11px;
+  background-repeat: space;
+  -webkit-mask-image:
+    radial-gradient(ellipse at center, #000 0%, transparent 60%),
+    radial-gradient(ellipse at center, #000 0%, transparent 62%);
+  mask-image:
+    radial-gradient(ellipse at center, #000 0%, transparent 60%),
+    radial-gradient(ellipse at center, #000 0%, transparent 62%);
+  -webkit-mask-repeat: no-repeat, no-repeat;
+  mask-repeat: no-repeat, no-repeat;
+  -webkit-mask-size: 72% 62%, 52% 52%;
+  mask-size: 72% 62%, 52% 52%;
+  -webkit-mask-position: 16% 20%, 30% 32%;
+  mask-position: 16% 20%, 30% 32%;
+  animation:
+    ig-morph 4.2s cubic-bezier(0.35, 1.55, 0.65, 1) infinite,
+    ig-breathe 1.9s cubic-bezier(0.66, 0, 0.34, 1) infinite;
+}
+
+@keyframes ig-morph {
+  0% {
+    -webkit-mask-size: 52% 46%, 40% 40%;
+    mask-size: 52% 46%, 40% 40%;
+    -webkit-mask-position: 16% 20%, 30% 32%;
+    mask-position: 16% 20%, 30% 32%;
+  }
+  25% {
+    -webkit-mask-size: 46% 58%, 44% 38%;
+    mask-size: 46% 58%, 44% 38%;
+    -webkit-mask-position: 84% 16%, 66% 30%;
+    mask-position: 84% 16%, 66% 30%;
+  }
+  50% {
+    -webkit-mask-size: 60% 44%, 38% 46%;
+    mask-size: 60% 44%, 38% 46%;
+    -webkit-mask-position: 82% 84%, 62% 68%;
+    mask-position: 82% 84%, 62% 68%;
+  }
+  75% {
+    -webkit-mask-size: 48% 54%, 46% 40%;
+    mask-size: 48% 54%, 46% 40%;
+    -webkit-mask-position: 14% 82%, 34% 66%;
+    mask-position: 14% 82%, 34% 66%;
+  }
+  100% {
+    -webkit-mask-size: 52% 46%, 40% 40%;
+    mask-size: 52% 46%, 40% 40%;
+    -webkit-mask-position: 16% 20%, 30% 32%;
+    mask-position: 16% 20%, 30% 32%;
+  }
+}
+
+@keyframes ig-breathe {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+.igRes {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  color: var(--dsw-static-neutral-bluish-400, #a1a1a1);
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-1, #fff) 72%, transparent);
+  padding: 2px 7px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+
+.igImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.igMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  text-align: left;
+  width: 100%;
+}
+
+.igLabel {
+  background: linear-gradient(
+    90deg,
+    var(--dsw-static-neutral-bluish-900, #1a1a1a) 0%,
+    var(--dsw-static-neutral-bluish-900, #1a1a1a) 30%,
+    color-mix(in srgb, var(--dsw-static-neutral-bluish-900, #1a1a1a) 45%, transparent) 45%,
+    color-mix(in srgb, var(--dsw-static-neutral-bluish-900, #1a1a1a) 45%, transparent) 55%,
+    var(--dsw-static-neutral-bluish-900, #1a1a1a) 70%,
+    var(--dsw-static-neutral-bluish-900, #1a1a1a) 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: ig-shine 2.25s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
+  font-weight: 550;
+  font-size: 14px;
+}
+
+@keyframes ig-shine {
+  0%, 18% { background-position: 100% 0; }
+  82%, 100% { background-position: 0% 0; }
+}
+
+.igDoneLabel {
+  font-weight: 550;
+  font-size: 14px;
+  color: var(--dsw-static-neutral-bluish-900, #1a1a1a);
+}
+
+.igPrompt {
+  color: var(--dsw-static-neutral-bluish-400, #a1a1a1);
+  font-size: 13px;
+  word-break: break-word;
+}
+
+.igPath {
+  color: var(--dsw-static-neutral-bluish-400, #a1a1a1);
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-all;
+}
+
+.igRef {
+  color: var(--dsw-static-neutral-bluish-400, #a1a1a1);
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.igRefThumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--dsw-static-neutral-bluish-400, #a1a1a1);
+  font-size: 12px;
+}
+
+.igRefThumb img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+}
+
+.igError {
+  color: var(--dsw-alias-fg-error, #c0392b);
+  font-size: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .igGlow {
+    animation: none;
+    opacity: 0.7;
+  }
+
+  .igLabel {
+    animation: none;
+    -webkit-text-fill-color: var(--dsw-static-neutral-bluish-900, #1a1a1a);
+    color: var(--dsw-static-neutral-bluish-900, #1a1a1a);
+  }
+}
+
+:global([data-theme='dark']) .igCanvas,
+:global([data-theme='dark']) .igResult {
+  background: var(--dsw-alias-bg-layer-2, #1f1f1f);
+}
+
+:global([data-theme='dark']) .igGlow {
+  background-image: radial-gradient(circle, var(--dsw-static-neutral-bluish-50, #f5f5f5) 1.1px, transparent 1.6px);
+}
+
+:global([data-theme='dark']) .igRes {
+  color: var(--dsw-static-neutral-bluish-300, #a3a3a3);
+  background: color-mix(in srgb, var(--dsw-alias-bg-layer-1, #1a1a1a) 72%, transparent);
+}
+
+:global([data-theme='dark']) .igLabel {
+  background: linear-gradient(
+    90deg,
+    var(--dsw-static-neutral-bluish-50, #f5f5f5) 0%,
+    var(--dsw-static-neutral-bluish-50, #f5f5f5) 30%,
+    color-mix(in srgb, var(--dsw-static-neutral-bluish-50, #f5f5f5) 45%, transparent) 45%,
+    color-mix(in srgb, var(--dsw-static-neutral-bluish-50, #f5f5f5) 45%, transparent) 55%,
+    var(--dsw-static-neutral-bluish-50, #f5f5f5) 70%,
+    var(--dsw-static-neutral-bluish-50, #f5f5f5) 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+:global([data-theme='dark']) .igDoneLabel {
+  color: var(--dsw-static-neutral-bluish-50, #f5f5f5);
+}

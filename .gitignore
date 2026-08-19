@@ -38,3 +38,6 @@ apps/web/dist/
 worktrees/
 .agents/worktrees/
 .typert-*/
+plugins/deepseek-web-rpa/.browser-profile/
+plugins/deepseek-web-rpa/node_modules/
+plugins/kolors-image-gen/node_modules/
